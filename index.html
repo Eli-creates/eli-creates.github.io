@@ -30,7 +30,7 @@
 							<ul>
 								<li><a href="#top" id="top-link"><span class="icon solid fa-home">Intro</span></a></li>
                                                                 <li><a href="#portfolio" id="portfolio-link"><span class="icon solid fa-th">Portfolio</span></a></li>
-                                                                <li><a href="events.html" id="events-link"><span class="icon solid fa-calendar-alt">Events</span></a></li>
+                                                                <li><a href="#events" id="events-link"><span class="icon solid fa-calendar-alt">Events</span></a></li>
 								<li><a href="#about" id="about-link"><span class="icon solid fa-user">About Me</span></a></li>
 								<li><a href="#contact" id="contact-link"><span class="icon solid fa-envelope">Contact</span></a></li>
 							</ul>
@@ -179,7 +179,26 @@
 						</div>
 					</section>
 
-                                <!-- About Me -->
+				<!-- About Me -->
+                                        <section id="events" class="three">
+                                                <div class="container">
+
+                                                        <header>
+                                                                <h2>Events</h2>
+                                                        </header>
+
+                                                        <p>Catch me at these shoots, workshops, and showcases. Toggle to see what’s coming up or revisit past highlights.</p>
+
+                                                        <div class="event-toggle" role="group" aria-label="Filter events">
+                                                                <button class="event-filter active" data-filter="upcoming">Upcoming</button>
+                                                                <button class="event-filter" data-filter="past">Past</button>
+                                                        </div>
+
+                                                        <div id="events-grid" class="events-grid" aria-live="polite"></div>
+
+                                                </div>
+                                        </section>
+
                                         <section id="about" class="three">
 						<div class="container">
 
