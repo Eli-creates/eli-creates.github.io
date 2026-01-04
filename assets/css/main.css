@@ -2245,9 +2245,19 @@ input, select, textarea {
 					color: #fff;
 				}
 
-					#nav ul li a.active span:before {
-						color: #e27689;
-					}
+                                #nav ul li a.active span:before {
+                                        color: #e27689;
+                                }
+
+                                #nav ul li a#events-link.active,
+                                .events-page #nav ul li a#events-link {
+                                        color: #30a5ff;
+                                }
+
+                                #nav ul li a#events-link.active span:before,
+                                .events-page #nav ul li a#events-link span:before {
+                                        color: #30a5ff;
+                                }
 
 /* Footer */
 
