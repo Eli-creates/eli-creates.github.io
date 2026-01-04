@@ -1819,10 +1819,331 @@ input, select, textarea {
 		padding-left: 0;
 	}
 
-		ul.icons li {
-			display: inline-block;
-			padding-left: 0;
-		}
+                ul.icons li {
+                        display: inline-block;
+                        padding-left: 0;
+                }
+
+/* Events */
+
+        .events-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 1.5em;
+                margin-top: 1.5em;
+        }
+
+        .event-card {
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 10px;
+                padding: 1.25em;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+                transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .event-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 16px 35px rgba(0, 0, 0, 0.18);
+                border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .event-meta {
+                font-size: 0.9em;
+                color: rgba(255, 255, 255, 0.8);
+                margin: 0.35em 0;
+        }
+
+        .event-cta {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35em;
+                margin-top: 0.75em;
+                font-weight: 600;
+        }
+
+        .event-toggle {
+                display: inline-flex;
+                background: rgba(255, 255, 255, 0.06);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 999px;
+                overflow: hidden;
+        }
+
+        .event-filter {
+                background: transparent;
+                color: inherit;
+                border: 0;
+                padding: 0.65em 1.1em;
+                font-weight: 600;
+                letter-spacing: 0.02em;
+                cursor: pointer;
+                transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .event-filter:hover,
+        .event-filter:focus-visible {
+                background: rgba(255, 255, 255, 0.12);
+        }
+
+        .event-filter.active {
+                background: #ffffff;
+                color: #111111;
+        }
+
+        .event-status {
+                display: inline-block;
+                padding: 0.2em 0.7em;
+                border-radius: 999px;
+                font-size: 0.8em;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                background: rgba(255, 255, 255, 0.14);
+        }
+
+/* Event uploads */
+        .events-page #main {
+                background: #1d1d1d;
+        }
+
+        .events-hero {
+                text-align: center;
+                padding: 6em 0 5em 0;
+                background: linear-gradient(135deg, rgba(21, 21, 21, 0.9), rgba(55, 55, 55, 0.7)), url('../../images/pic14.jpg');
+                background-size: cover;
+                background-position: center;
+        }
+
+        .upload-panel {
+                display: grid;
+                grid-template-columns: 2fr 1fr;
+                gap: 1.5em;
+                align-items: stretch;
+        }
+
+        .upload-dropzone {
+                border: 2px dashed rgba(255, 255, 255, 0.35);
+                border-radius: 12px;
+                padding: 2em;
+                text-align: center;
+                background: rgba(255, 255, 255, 0.05);
+                transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+        }
+
+        .upload-dropzone.drag-active {
+                border-color: #ffffff;
+                background: rgba(255, 255, 255, 0.09);
+                transform: translateY(-4px);
+        }
+
+        .upload-dropzone input[type="file"] {
+                display: none;
+        }
+
+        .upload-dropzone:focus-visible {
+                outline: 3px solid #8ebebc;
+                outline-offset: 6px;
+        }
+
+        .upload-dropzone .icon {
+                font-size: 2.5em;
+                margin-bottom: 0.5em;
+        }
+
+        .upload-button {
+                display: inline-block;
+                margin-top: 1em;
+                padding: 0.7em 1.25em;
+                border-radius: 10px;
+                background: #ffffff;
+                color: #111;
+                border: none;
+                cursor: pointer;
+                font-weight: 600;
+        }
+
+        .upload-button:hover,
+        .upload-button:focus-visible {
+                background: #f2f2f2;
+        }
+
+        .upload-note {
+                margin-top: 0.75em;
+                font-size: 0.9em;
+                color: rgba(255, 255, 255, 0.8);
+        }
+
+        .upload-meta {
+                border-radius: 12px;
+                padding: 1.5em;
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+                border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .upload-list {
+                list-style: disc;
+                padding-left: 1em;
+        }
+
+        .upload-list li {
+                margin-bottom: 0.5em;
+        }
+
+        .event-photo-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 1.25em;
+        }
+
+        .event-photo-card {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+                transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .event-photo-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 16px 35px rgba(0, 0, 0, 0.26);
+                border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .event-photo-card:focus-visible {
+                outline: 3px solid #8ebebc;
+                outline-offset: 2px;
+        }
+
+        .event-photo-card img,
+        .event-photo-card .placeholder-visual {
+                display: block;
+                width: 100%;
+                height: 220px;
+                object-fit: cover;
+        }
+
+        .event-photo-card figcaption {
+                padding: 1em 1.2em;
+                display: flex;
+                flex-direction: column;
+                gap: 0.4em;
+        }
+
+        .event-photo-card figcaption strong {
+                color: #fff;
+                font-size: 1.05em;
+        }
+
+        .event-photo-card figcaption span {
+                font-size: 0.95em;
+                color: rgba(255, 255, 255, 0.8);
+                line-height: 1.4em;
+        }
+
+        .placeholder-visual {
+                display: grid;
+                place-items: center;
+                color: rgba(255, 255, 255, 0.85);
+                background: repeating-linear-gradient(
+                        45deg,
+                        rgba(255, 255, 255, 0.06),
+                        rgba(255, 255, 255, 0.06) 10px,
+                        rgba(255, 255, 255, 0.12) 10px,
+                        rgba(255, 255, 255, 0.12) 20px
+                );
+                text-align: center;
+                padding: 1em;
+        }
+
+        .placeholder-visual .icon {
+                font-size: 2em;
+                margin-bottom: 0.4em;
+        }
+
+        .event-photo-card.empty-slot {
+                border-style: dashed;
+                border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .photo-lightbox {
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.85);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                gap: 1em;
+                padding: 1.5em;
+                z-index: 20000;
+        }
+
+        .photo-lightbox.open {
+                display: flex;
+        }
+
+        .photo-lightbox img {
+                max-width: 100%;
+                max-height: 75vh;
+                border-radius: 12px;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+        }
+
+        .lightbox-caption {
+                color: #f5f5f5;
+                font-size: 1.1em;
+                text-align: center;
+        }
+
+        .lightbox-close {
+                position: absolute;
+                top: 1.2em;
+                right: 1.2em;
+                background: rgba(0, 0, 0, 0.6);
+                color: #fff;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 999px;
+                width: 42px;
+                height: 42px;
+                font-size: 1.5em;
+                cursor: pointer;
+        }
+
+        body.no-scroll {
+                overflow: hidden;
+        }
+
+        @media screen and (max-width: 980px) {
+                .upload-panel {
+                        grid-template-columns: 1fr;
+                }
+
+                .upload-dropzone,
+                .upload-meta {
+                        padding: 1.25em;
+                }
+
+                .event-photo-card img,
+                .event-photo-card .placeholder-visual {
+                        height: 190px;
+                }
+        }
+
+        @media screen and (max-width: 736px) {
+                .events-hero {
+                        padding: 4em 1em 3em 1em;
+                }
+
+                .lightbox-close {
+                        top: 0.75em;
+                        right: 0.75em;
+                }
+
+                .photo-lightbox img {
+                        max-height: 65vh;
+                }
+        }
 
 		ul.icons a {
 			display: inline-block;
