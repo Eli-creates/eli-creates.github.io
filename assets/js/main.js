@@ -117,7 +117,92 @@
 					resetForms: true,
 					side: 'left',
 					target: $body,
-					visibleClass: 'header-visible'
-				});
+                                        visibleClass: 'header-visible'
+                                });
+
+})(jQuery);
+
+(function($) {
+
+        const events = [
+                {
+                        title: 'Sunset Portrait Walk',
+                        date: '2024-10-05T18:00:00',
+                        location: 'St. Petersburg Pier',
+                        blurb: 'Golden hour portraits along the water with live lighting demos and creative prompts.',
+                        cta: 'mailto:elijahjoseph1226@gmail.com?subject=Sunset%20Portrait%20Walk',
+                },
+                {
+                        title: 'Winter Gallery Pop-Up',
+                        date: '2024-12-12T19:00:00',
+                        location: 'Tampa Heights Market Hall',
+                        blurb: 'A curated selection of prints, behind-the-scenes reels, and a Q&A on storytelling techniques.',
+                        cta: 'mailto:elijahjoseph1226@gmail.com?subject=Winter%20Gallery%20RSVP',
+                },
+                {
+                        title: 'Pride Parade Street Series',
+                        date: '2024-03-23T11:00:00',
+                        location: 'Central Ave, St. Pete',
+                        blurb: 'Documentary-style coverage of the parade with on-the-spot portraits for attendees.',
+                        cta: 'mailto:elijahjoseph1226@gmail.com?subject=Pride%20Parade%20Prints',
+                }
+        ];
+
+        const $grid = $('#events-grid');
+        const $filters = $('.event-filter');
+
+        if ($grid.length === 0) return;
+
+        const dateFormatter = new Intl.DateTimeFormat('en-US', {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+        });
+
+        const now = new Date();
+
+        function getEventStatus(date) {
+                return date >= now ? 'upcoming' : 'past';
+        }
+
+        function buildCard(event, status) {
+                const $card = $('<article>').addClass('event-card');
+                const $title = $('<h3>').text(event.title);
+                const $status = $('<span>').addClass('event-status').text(status === 'upcoming' ? 'Upcoming' : 'Past highlight');
+
+                const $metaDate = $('<div>').addClass('event-meta').text(dateFormatter.format(event.dateObj));
+                const $metaLocation = $('<div>').addClass('event-meta').text(event.location);
+                const $blurb = $('<p>').text(event.blurb);
+                const $cta = $('<a>').addClass('event-cta').attr('href', event.cta).text('RSVP / Learn more').prepend($('<span>').addClass('icon solid fa-envelope'));
+
+                $card.append($title, $status, $metaDate, $metaLocation, $blurb, $cta);
+                return $card;
+        }
+
+        function render(filter) {
+                $grid.empty();
+                const filtered = events
+                        .map(event => ({ ...event, dateObj: new Date(event.date) }))
+                        .filter(event => getEventStatus(event.dateObj) === filter)
+                        .sort((a, b) => filter === 'upcoming' ? a.dateObj - b.dateObj : b.dateObj - a.dateObj);
+
+                if (filtered.length === 0) {
+                        $grid.append($('<p>').text('More dates are being scheduled—check back soon!'));
+                        return;
+                }
+
+                filtered.forEach(event => {
+                        const status = getEventStatus(event.dateObj);
+                        $grid.append(buildCard(event, status));
+                });
+        }
+
+        $filters.on('click', function() {
+                const filter = $(this).data('filter');
+                $filters.removeClass('active');
+                $(this).addClass('active');
+                render(filter);
+        });
+
+        render('upcoming');
 
 })(jQuery);
