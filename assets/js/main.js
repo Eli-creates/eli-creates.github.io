@@ -26,73 +26,98 @@
 			}, 100);
 		});
 
-	// Nav.
-		var $nav_a = $nav.find('a');
 
-		$nav_a
-			.addClass('scrolly')
-			.on('click', function(e) {
+                // Nav.
+                        var $nav_a = $nav.find('a');
+                        var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+                        if (currentPage === '') currentPage = 'index.html';
 
-				var $this = $(this);
+                        if (currentPage === 'events.html') {
+                                $nav_a.removeClass('active');
+                                $('#events-link').addClass('active');
+                        }
+                        else if (currentPage === 'wedding.html') {
+                                $nav_a.removeClass('active');
+                                $('#wedding-link').addClass('active');
+                        }
 
-				// External link? Bail.
-					if ($this.attr('href').charAt(0) != '#')
-						return;
+                        var isHome = currentPage === 'index.html';
+                        var $nav_scrolly = isHome ? $nav_a.filter(function() {
+                                var href = $(this).attr('href') || '';
+                                var hashIndex = href.indexOf('#');
+                                return hashIndex === 0 || href.indexOf('index.html#') === 0 || href.indexOf('./index.html#') === 0;
+                        }) : $();
 
-				// Prevent default.
-					e.preventDefault();
+                $nav_scrolly
+                        .addClass('scrolly')
+                        .on('click', function(e) {
 
-				// Deactivate all links.
-					$nav_a.removeClass('active');
+                                var $this = $(this);
+                                if (!isHome)
+                                        return;
 
-				// Activate link *and* lock it (so Scrollex doesn't try to activate other links as we're scrolling to this one's section).
-					$this
-						.addClass('active')
-						.addClass('active-locked');
+                                var href = $this.attr('href') || '';
+                                var hashIndex = href.indexOf('#');
 
-			})
-			.each(function() {
+                                if (hashIndex < 0)
+                                        return;
 
-				var	$this = $(this),
-					id = $this.attr('href'),
-					$section = $(id);
+                                var target = href.substring(hashIndex);
 
-				// No section for this link? Bail.
-					if ($section.length < 1)
-						return;
+                                if (!target)
+                                        return;
 
-				// Scrollex.
-					$section.scrollex({
-						mode: 'middle',
-						top: '-10vh',
-						bottom: '-10vh',
-						initialize: function() {
+                                e.preventDefault();
 
-							// Deactivate section.
-								$section.addClass('inactive');
+                                $nav_a.removeClass('active');
 
-						},
-						enter: function() {
+                                $this
+                                        .addClass('active')
+                                        .addClass('active-locked');
 
-							// Activate section.
-								$section.removeClass('inactive');
+                                var $target = $(target);
+                                if ($target.length) {
+                                        $('html, body').stop().animate({ scrollTop: $target.offset().top }, 1000, 'swing');
+                                }
 
-							// No locked links? Deactivate all links and activate this section's one.
-								if ($nav_a.filter('.active-locked').length == 0) {
+                        })
+                        .each(function() {
 
-									$nav_a.removeClass('active');
-									$this.addClass('active');
+                                var     $this = $(this),
+                                        href = $this.attr('href'),
+                                        id = href.substring(href.indexOf('#')),
+                                        $section = $(id);
 
-								}
+                                if (!isHome || $section.length < 1)
+                                        return;
 
-							// Otherwise, if this section's link is the one that's locked, unlock it.
-								else if ($this.hasClass('active-locked'))
-									$this.removeClass('active-locked');
+                                $section.scrollex({
+                                        mode: 'middle',
+                                        top: '-10vh',
+                                        bottom: '-10vh',
+                                        initialize: function() {
 
-						}
-					});
+                                                $section.addClass('inactive');
 
-			});
+                                        },
+                                        enter: function() {
+
+                                                $section.removeClass('inactive');
+
+                                                if ($nav_a.filter('.active-locked').length == 0) {
+
+                                                        $nav_a.removeClass('active');
+                                                        $this.addClass('active');
+
+                                                }
+
+                                                else if ($this.hasClass('active-locked'))
+                                                        $this.removeClass('active-locked');
+
+                                        }
+                                });
+
+                        });
 
 	// Scrolly.
 		$('.scrolly').scrolly();
@@ -117,7 +142,92 @@
 					resetForms: true,
 					side: 'left',
 					target: $body,
-					visibleClass: 'header-visible'
-				});
+                                        visibleClass: 'header-visible'
+                                });
+
+})(jQuery);
+
+(function($) {
+
+        const events = [
+                {
+                        title: 'Sunset Portrait Walk',
+                        date: '2024-10-05T18:00:00',
+                        location: 'St. Petersburg Pier',
+                        blurb: 'Golden hour portraits along the water with live lighting demos and creative prompts.',
+                        cta: 'mailto:elijahjoseph1226@gmail.com?subject=Sunset%20Portrait%20Walk',
+                },
+                {
+                        title: 'Winter Gallery Pop-Up',
+                        date: '2024-12-12T19:00:00',
+                        location: 'Tampa Heights Market Hall',
+                        blurb: 'A curated selection of prints, behind-the-scenes reels, and a Q&A on storytelling techniques.',
+                        cta: 'mailto:elijahjoseph1226@gmail.com?subject=Winter%20Gallery%20RSVP',
+                },
+                {
+                        title: 'Pride Parade Street Series',
+                        date: '2024-03-23T11:00:00',
+                        location: 'Central Ave, St. Pete',
+                        blurb: 'Documentary-style coverage of the parade with on-the-spot portraits for attendees.',
+                        cta: 'mailto:elijahjoseph1226@gmail.com?subject=Pride%20Parade%20Prints',
+                }
+        ];
+
+        const $grid = $('#events-grid');
+        const $filters = $('.event-filter');
+
+        if ($grid.length === 0) return;
+
+        const dateFormatter = new Intl.DateTimeFormat('en-US', {
+                dateStyle: 'medium',
+                timeStyle: 'short'
+        });
+
+        const now = new Date();
+
+        function getEventStatus(date) {
+                return date >= now ? 'upcoming' : 'past';
+        }
+
+        function buildCard(event, status) {
+                const $card = $('<article>').addClass('event-card');
+                const $title = $('<h3>').text(event.title);
+                const $status = $('<span>').addClass('event-status').text(status === 'upcoming' ? 'Upcoming' : 'Past highlight');
+
+                const $metaDate = $('<div>').addClass('event-meta').text(dateFormatter.format(event.dateObj));
+                const $metaLocation = $('<div>').addClass('event-meta').text(event.location);
+                const $blurb = $('<p>').text(event.blurb);
+                const $cta = $('<a>').addClass('event-cta').attr('href', event.cta).text('RSVP / Learn more').prepend($('<span>').addClass('icon solid fa-envelope'));
+
+                $card.append($title, $status, $metaDate, $metaLocation, $blurb, $cta);
+                return $card;
+        }
+
+        function render(filter) {
+                $grid.empty();
+                const filtered = events
+                        .map(event => ({ ...event, dateObj: new Date(event.date) }))
+                        .filter(event => getEventStatus(event.dateObj) === filter)
+                        .sort((a, b) => filter === 'upcoming' ? a.dateObj - b.dateObj : b.dateObj - a.dateObj);
+
+                if (filtered.length === 0) {
+                        $grid.append($('<p>').text('More dates are being scheduled—check back soon!'));
+                        return;
+                }
+
+                filtered.forEach(event => {
+                        const status = getEventStatus(event.dateObj);
+                        $grid.append(buildCard(event, status));
+                });
+        }
+
+        $filters.on('click', function() {
+                const filter = $(this).data('filter');
+                $filters.removeClass('active').attr('aria-pressed', 'false');
+                $(this).addClass('active').attr('aria-pressed', 'true');
+                render(filter);
+        });
+
+        render('upcoming');
 
 })(jQuery);
