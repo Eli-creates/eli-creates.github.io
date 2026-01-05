@@ -2158,27 +2158,31 @@ input, select, textarea {
 		background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15)), url("images/overlay.png");
 		background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15)), url("images/overlay.png");
 		background-image: linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.15)), url("images/overlay.png");
-		-moz-transition: background-color 0.35s ease-in-out;
-		-webkit-transition: background-color 0.35s ease-in-out;
-		-ms-transition: background-color 0.35s ease-in-out;
-		transition: background-color 0.35s ease-in-out;
+		-moz-transition: background-color 0.35s ease-in-out, transform 0.2s ease, box-shadow 0.2s ease;
+		-webkit-transition: background-color 0.35s ease-in-out, transform 0.2s ease, box-shadow 0.2s ease;
+		-ms-transition: background-color 0.35s ease-in-out, transform 0.2s ease, box-shadow 0.2s ease;
+		transition: background-color 0.35s ease-in-out, transform 0.2s ease, box-shadow 0.2s ease;
 	}
 
-		input[type="button"]:hover,
-		input[type="submit"]:hover,
-		input[type="reset"]:hover,
-		button:hover,
-		.button:hover {
-			background-color: #00bfff;
-		}
+	input[type="button"]:hover,
+	input[type="submit"]:hover,
+	input[type="reset"]:hover,
+	button:hover,
+	.button:hover {
+		background-color: #00bfff;
+		transform: translateY(-2px);
+		box-shadow: 0 12px 25px rgba(0, 191, 255, 0.35);
+	}
 
-		input[type="button"]:active,
-		input[type="submit"]:active,
-		input[type="reset"]:active,
-		button:active,
-		.button:active {
-			background-color: #00bfff;
-		}
+	input[type="button"]:active,
+	input[type="submit"]:active,
+	input[type="reset"]:active,
+	button:active,
+	.button:active {
+		background-color: #00bfff;
+		transform: translateY(0);
+		box-shadow: 0 6px 15px rgba(0, 191, 255, 0.28);
+	}
 
 /* Item */
 
