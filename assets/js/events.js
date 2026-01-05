@@ -1,7 +1,5 @@
-(function($) {
+﻿(function($) {
         const $grid = $('#event-photo-grid');
-        const $fileInput = $('#event-photo-input');
-        const $dropzone = $('#upload-dropzone');
         const $lightbox = $('#photo-lightbox');
         const $lightboxImage = $('#lightbox-image');
         const $lightboxCaption = $('#lightbox-caption');
@@ -28,7 +26,7 @@
                 {
                         placeholder: true,
                         title: 'Add your next event highlight',
-                        detail: 'Upload to replace this reserved spot.'
+                        detail: 'Keep this slot open for a future favorite.'
                 }
         ];
 
@@ -85,58 +83,6 @@
                 $lightboxCaption.text('');
                 $('body').removeClass('no-scroll');
         }
-
-        function addUploads(files) {
-                const uploads = Array.from(files);
-
-                uploads.forEach(file => {
-                        const src = URL.createObjectURL(file);
-                        const title = file.name || 'New upload';
-
-                        const photo = {
-                                src,
-                                title,
-                                detail: 'Fresh upload preview — saved locally until you refresh.'
-                        };
-
-                        $grid.append(buildCard(photo));
-                });
-        }
-
-        function preventDefaults(e) {
-                e.preventDefault();
-                e.stopPropagation();
-        }
-
-        $fileInput.on('change', function() {
-                if (this.files && this.files.length) {
-                        addUploads(this.files);
-                        this.value = '';
-                }
-        });
-
-        $dropzone
-                .attr({ tabindex: 0, role: 'button', 'aria-label': 'Upload or drop event photos' })
-                .on('keydown', function(e) {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                $fileInput.trigger('click');
-                        }
-                });
-
-        $dropzone.on('dragenter dragover', function(e) {
-                        preventDefaults(e);
-                        $dropzone.addClass('drag-active');
-                })
-                .on('dragleave dragend drop', function(e) {
-                        preventDefaults(e);
-                        $dropzone.removeClass('drag-active');
-                })
-                .on('drop', function(e) {
-                        if (e.originalEvent.dataTransfer?.files?.length) {
-                                addUploads(e.originalEvent.dataTransfer.files);
-                        }
-                });
 
         $lightboxClose.on('click', closeLightbox);
         $lightbox.on('click', function(e) {

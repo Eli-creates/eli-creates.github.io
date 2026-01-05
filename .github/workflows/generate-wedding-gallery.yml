@@ -1,0 +1,42 @@
+name: Generate Wedding Gallery
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - images/wedding/**
+      - wedding.html
+      - scripts/generate-wedding-gallery.js
+      - .github/workflows/generate-wedding-gallery.yml
+  workflow_dispatch:
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate wedding gallery
+        run: node scripts/generate-wedding-gallery.js
+
+      - name: Commit updated gallery
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add wedding.html
+            git commit -m "Auto-update wedding gallery [skip ci]"
+            git push
+          else
+            echo "No changes to commit."
+          fi

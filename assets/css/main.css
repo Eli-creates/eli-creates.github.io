@@ -1901,6 +1901,12 @@ input, select, textarea {
                 background: rgba(255, 255, 255, 0.14);
         }
 
+/* Lightbox */
+
+        .lightbox-target {
+                cursor: zoom-in;
+        }
+
 		ul.icons a {
 			display: inline-block;
 			width: 2em;

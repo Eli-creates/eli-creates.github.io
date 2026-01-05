@@ -30,7 +30,7 @@
 							<ul>
 								<li><a href="#top" id="top-link"><span class="icon solid fa-home">Intro</span></a></li>
                                                                 <li><a href="#portfolio" id="portfolio-link"><span class="icon solid fa-th">Portfolio</span></a></li>
-                                                                <li><a href="#events" id="events-link"><span class="icon solid fa-calendar-alt">Events</span></a></li>
+                                                                <li><a href="#booking" id="booking-link"><span class="icon solid fa-calendar-alt">Booking</span></a></li>
 								<li><a href="#about" id="about-link"><span class="icon solid fa-user">About Me</span></a></li>
 								<li><a href="#contact" id="contact-link"><span class="icon solid fa-envelope">Contact</span></a></li>
 							</ul>
@@ -184,21 +184,29 @@
 					</section>
 
 				<!-- About Me -->
-                                        <section id="events" class="three">
+                                        <section id="booking" class="three">
                                                 <div class="container">
 
                                                         <header>
-                                                                <h2>Events</h2>
+                                                                <h2>Booking</h2>
                                                         </header>
 
-                                                        <p>Catch me at these shoots, workshops, and showcases. Toggle to see what’s coming up or revisit past highlights.</p>
+                                                        <p>Ready to plan a shoot or book a session? Share a few details and I will follow up with availability and next steps.</p>
 
-                                                        <div class="event-toggle" role="group" aria-label="Filter events">
-                                                                <button class="event-filter active" data-filter="upcoming">Upcoming</button>
-                                                                <button class="event-filter" data-filter="past">Past</button>
+                                                        <div class="booking-panel">
+                                                                <div class="booking-details">
+                                                                        <h3>What to include</h3>
+                                                                        <ul>
+                                                                                <li>Preferred date and location.</li>
+                                                                                <li>Session type (portraits, event coverage, wedding, etc.).</li>
+                                                                                <li>Estimated duration and any must-have shots.</li>
+                                                                        </ul>
+                                                                </div>
+                                                                <div class="booking-actions">
+                                                                        <a href="mailto:elijahjoseph1226@gmail.com?subject=Booking%20Request" class="button">Email booking request</a>
+                                                                        <a href="mailto:elijah.joseph@disney.com?subject=Professional%20Booking%20Request" class="button secondary">Professional inquiries</a>
+                                                                </div>
                                                         </div>
-
-                                                        <div id="events-grid" class="events-grid" aria-live="polite"></div>
 
                                                 </div>
                                         </section>
@@ -254,14 +262,22 @@
 
 			</div>
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+	<!-- Lightbox -->
+		<div id="photo-lightbox" class="photo-lightbox" aria-hidden="true" role="dialog" aria-label="Full screen photo viewer">
+			<button class="lightbox-close" aria-label="Close full-screen photo">&times;</button>
+			<img id="lightbox-image" src="" alt="" />
+			<div id="lightbox-caption" class="lightbox-caption"></div>
+		</div>
+
+	<!-- Scripts -->
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/jquery.scrolly.min.js"></script>
+		<script src="assets/js/jquery.scrollex.min.js"></script>
+		<script src="assets/js/browser.min.js"></script>
+		<script src="assets/js/breakpoints.min.js"></script>
+		<script src="assets/js/util.js"></script>
+		<script src="assets/js/main.js"></script>
+		<script src="assets/js/lightbox.js"></script>
 
 	</body>
 </html>
