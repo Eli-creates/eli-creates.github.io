@@ -43,60 +43,76 @@
                                         if ($this.attr('href').charAt(0) != '#')
                                                 return;
 
-				// Prevent default.
-					e.preventDefault();
+                $nav_scrolly
+                        .addClass('scrolly')
+                        .on('click', function(e) {
 
-				// Deactivate all links.
-					$nav_a.removeClass('active');
+                                var $this = $(this);
+                                if (!isHome)
+                                        return;
 
-				// Activate link *and* lock it (so Scrollex doesn't try to activate other links as we're scrolling to this one's section).
-					$this
-						.addClass('active')
-						.addClass('active-locked');
+                                var href = $this.attr('href') || '';
+                                var hashIndex = href.indexOf('#');
 
-			})
-			.each(function() {
+                                if (hashIndex < 0)
+                                        return;
 
-				var	$this = $(this),
-					id = $this.attr('href'),
-					$section = $(id);
+                                var target = href.substring(hashIndex);
 
-				// No section for this link? Bail.
-					if ($section.length < 1)
-						return;
+                                if (!target)
+                                        return;
 
-				// Scrollex.
-					$section.scrollex({
-						mode: 'middle',
-						top: '-10vh',
-						bottom: '-10vh',
-						initialize: function() {
+                                e.preventDefault();
 
-							// Deactivate section.
-								$section.addClass('inactive');
+                                $nav_a.removeClass('active');
 
-						},
-						enter: function() {
+                                $this
+                                        .addClass('active')
+                                        .addClass('active-locked');
 
-							// Activate section.
-								$section.removeClass('inactive');
+                                var $target = $(target);
+                                if ($target.length) {
+                                        $('html, body').stop().animate({ scrollTop: $target.offset().top }, 1000, 'swing');
+                                }
 
-							// No locked links? Deactivate all links and activate this section's one.
-								if ($nav_a.filter('.active-locked').length == 0) {
+                        })
+                        .each(function() {
 
-									$nav_a.removeClass('active');
-									$this.addClass('active');
+                                var     $this = $(this),
+                                        href = $this.attr('href'),
+                                        id = href.substring(href.indexOf('#')),
+                                        $section = $(id);
 
-								}
+                                if (!isHome || $section.length < 1)
+                                        return;
 
-							// Otherwise, if this section's link is the one that's locked, unlock it.
-								else if ($this.hasClass('active-locked'))
-									$this.removeClass('active-locked');
+                                $section.scrollex({
+                                        mode: 'middle',
+                                        top: '-10vh',
+                                        bottom: '-10vh',
+                                        initialize: function() {
 
-						}
-					});
+                                                $section.addClass('inactive');
 
-			});
+                                        },
+                                        enter: function() {
+
+                                                $section.removeClass('inactive');
+
+                                                if ($nav_a.filter('.active-locked').length == 0) {
+
+                                                        $nav_a.removeClass('active');
+                                                        $this.addClass('active');
+
+                                                }
+
+                                                else if ($this.hasClass('active-locked'))
+                                                        $this.removeClass('active-locked');
+
+                                        }
+                                });
+
+                        });
 
 	// Scrolly.
 		$('.scrolly').scrolly();
