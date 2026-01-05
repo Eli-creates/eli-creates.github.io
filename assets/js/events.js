@@ -1,10 +1,5 @@
 ﻿(function($) {
         const $grid = $('#event-photo-grid');
-        const $lightbox = $('#photo-lightbox');
-        const $lightboxImage = $('#lightbox-image');
-        const $lightboxCaption = $('#lightbox-caption');
-        const $lightboxClose = $('.lightbox-close');
-
         if ($grid.length === 0) return;
 
         const placeholders = [
@@ -46,15 +41,13 @@
                 } else {
                         const $img = $('<img>').attr('src', photo.src).attr('alt', photo.title);
                         $card.append($img);
-                        $card
-                                .attr({ tabindex: 0, role: 'button', 'aria-label': `Open ${photo.title} in full screen` })
-                                .on('click', () => openLightbox(photo))
-                                .on('keydown', e => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                openLightbox(photo);
-                                        }
-                                });
+                        $card.attr({
+                                'data-lightbox-src': photo.src,
+                                'data-lightbox-title': photo.title,
+                                tabindex: 0,
+                                role: 'button',
+                                'aria-label': `Open ${photo.title} in full screen`
+                        });
                 }
 
                 const $caption = $('<figcaption>');
@@ -68,30 +61,6 @@
         function renderInitial() {
                 placeholders.forEach(photo => $grid.append(buildCard(photo)));
         }
-
-        function openLightbox(photo) {
-                if (!photo.src) return;
-                $lightboxImage.attr({ src: photo.src, alt: photo.title });
-                $lightboxCaption.text(photo.title);
-                $lightbox.attr('aria-hidden', 'false').addClass('open');
-                $('body').addClass('no-scroll');
-        }
-
-        function closeLightbox() {
-                $lightbox.removeClass('open').attr('aria-hidden', 'true');
-                $lightboxImage.attr({ src: '', alt: '' });
-                $lightboxCaption.text('');
-                $('body').removeClass('no-scroll');
-        }
-
-        $lightboxClose.on('click', closeLightbox);
-        $lightbox.on('click', function(e) {
-                if (e.target === this) closeLightbox();
-        });
-
-        $(document).on('keyup', function(e) {
-                if (e.key === 'Escape' && $lightbox.hasClass('open')) closeLightbox();
-        });
 
         renderInitial();
 
