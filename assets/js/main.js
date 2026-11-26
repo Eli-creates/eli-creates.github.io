@@ -108,6 +108,7 @@
 				.panel({
 					delay: 300,
 					hideOnClick: true,
+                    hideOnEscape: true,
 					hideOnSwipe: true,
 					resetScroll: true,
 					resetForms: true,
