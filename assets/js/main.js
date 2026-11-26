@@ -34,6 +34,72 @@
     });
     desktop.addEventListener('change', () => setMenu(false));
 
+    const desktopNav = header.querySelector('.desktop-nav');
+    const tabLens = document.createElement('span');
+    tabLens.className = 'tab-lens';
+    tabLens.setAttribute('aria-hidden', 'true');
+    desktopNav.prepend(tabLens);
+    desktopNav.classList.add('has-tab-lens');
+
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const currentTab = desktopNav.querySelector('[aria-current]');
+    let hoveredTab;
+    let displayedTab;
+    let stretch;
+
+    function positionTabLens() {
+        const tab = desktop.matches && (hoveredTab || desktopNav.querySelector('a:focus-visible') || currentTab);
+        const wasVisible = Boolean(displayedTab);
+        const isChangingTab = wasVisible && tab && tab !== displayedTab;
+        displayedTab = tab;
+        tabLens.classList.toggle('is-moving', wasVisible && Boolean(tab));
+        tabLens.classList.toggle('is-visible', Boolean(tab));
+        if (!tab) return;
+
+        tabLens.style.setProperty('--tab-offset', tab.offsetLeft + 'px');
+        tabLens.style.setProperty('--tab-width', tab.offsetWidth + 'px');
+
+        if (isChangingTab && !reducedMotion.matches && tabLens.animate) {
+            stretch?.cancel();
+            stretch = tabLens.animate([
+                { scale: '1 1' },
+                { scale: '1.085 .94', offset: 0.34 },
+                { scale: '1 1' }
+            ], { duration: 350, easing: 'ease-out' });
+        }
+    }
+
+    desktopNav.addEventListener('pointermove', event => {
+        if (event.pointerType === 'touch') return;
+        const tab = event.target.closest('a');
+        if (!tab) return;
+        if (tab !== hoveredTab) {
+            hoveredTab = tab;
+            positionTabLens();
+        }
+        if (!reducedMotion.matches) {
+            const bounds = tab.getBoundingClientRect();
+            tabLens.style.setProperty('--tab-glint', ((event.clientX - bounds.left) / bounds.width * 100) + '%');
+        }
+    });
+    desktopNav.addEventListener('pointerleave', () => {
+        hoveredTab = null;
+        tabLens.style.removeProperty('--tab-glint');
+        positionTabLens();
+    });
+    desktopNav.addEventListener('focusin', positionTabLens);
+    desktopNav.addEventListener('focusout', () => requestAnimationFrame(positionTabLens));
+    desktop.addEventListener('change', () => {
+        hoveredTab = null;
+        positionTabLens();
+    });
+    reducedMotion.addEventListener('change', () => {
+        stretch?.cancel();
+        tabLens.style.removeProperty('--tab-glint');
+    });
+    if (window.ResizeObserver) new ResizeObserver(positionTabLens).observe(desktopNav);
+    positionTabLens();
+
     const hero = document.querySelector('.hero');
     const theme = new IntersectionObserver(([entry]) => {
         header.classList.toggle('over-content', !entry.isIntersecting);
