@@ -98,7 +98,7 @@
 		// Toggle.
 			$(
 				'<div id="headerToggle">' +
-					'<a href="#header" class="toggle"></a>' +
+					'<a href="#header" class="toggle" aria-label="Toggle navigation" aria-controls="header"></a>' +
 				'</div>'
 			)
 				.appendTo($body);
@@ -106,7 +106,7 @@
 		// Header.
 			$('#header')
 				.panel({
-					delay: 500,
+					delay: 300,
 					hideOnClick: true,
 					hideOnSwipe: true,
 					resetScroll: true,
