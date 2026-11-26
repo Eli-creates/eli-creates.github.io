@@ -40,19 +40,35 @@
     }, { rootMargin: '-80px 0px 0px' });
     theme.observe(hero);
 
-    // Chromium composites SVG displacement over a live backdrop. Other engines use CSS frost.
-    if (!window.CSS || !CSS.supports('backdrop-filter', 'url("#refraction")')
-        || !CSS.supports('-webkit-app-region', 'drag') || !window.ResizeObserver) return;
+    if (!window.ResizeObserver || !window.CSS) return;
+
+    // Only Chromium samples an arbitrary live backdrop with an SVG filter.
+    const liveBackdrop = CSS.supports('-webkit-app-region', 'drag')
+        && CSS.supports('backdrop-filter', 'url("#refraction")');
+    if (!liveBackdrop && !CSS.supports('filter', 'url("#refraction")')) return;
 
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     if (!context) return;
 
-    const surfaces = Array.from(document.querySelectorAll('[data-refract]'));
+    const surfaces = Array.from(document.querySelectorAll(
+        liveBackdrop ? '[data-refract], .studio-brand' : '.hero [data-refract]'
+    ));
+    const channels = [
+        { color: 'red', factor: 0.86, matrix: '1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0' },
+        { color: 'green', factor: 1, matrix: '0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0' },
+        { color: 'blue', factor: 1.14, matrix: '0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0' }
+    ];
+    const passes = channels.map(({ color, matrix }) => `
+        <feDisplacementMap in="SourceGraphic" in2="lens" result="${color}-shift"
+            scale="0" xChannelSelector="R" yChannelSelector="G" />
+        <feColorMatrix in="${color}-shift" type="matrix" values="${matrix}" result="${color}" />`).join('');
     const filters = surfaces.map((_, index) => `
         <filter id="refraction-${index}" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-            <feImage preserveAspectRatio="none" result="rim" />
-            <feDisplacementMap in="SourceGraphic" in2="rim" scale="24" xChannelSelector="R" yChannelSelector="G" />
+            <feImage preserveAspectRatio="none" result="lens" />
+            ${passes}
+            <feComposite in="red" in2="green" operator="arithmetic" k2="1" k3="1" result="red-green" />
+            <feComposite in="red-green" in2="blue" operator="arithmetic" k2="1" k3="1" />
         </filter>`).join('');
 
     document.body.insertAdjacentHTML('beforeend', `
@@ -60,55 +76,97 @@
             <defs>${filters}</defs>
         </svg>`);
 
+    const photoScenes = new Map();
+    if (!liveBackdrop) {
+        surfaces.forEach(surface => {
+            surface.insertAdjacentHTML('afterbegin', `
+                <span class="lens-photo" aria-hidden="true">
+                    <span class="lens-sample"><span class="lens-scene"></span></span>
+                </span>`);
+            photoScenes.set(surface, surface.querySelector('.lens-scene'));
+        });
+    }
+
+    function alignHeroPhoto() {
+        const heroBox = hero.getBoundingClientRect();
+        const { backgroundColor, backgroundImage, backgroundPosition, backgroundSize } = getComputedStyle(hero);
+
+        for (const [surface, scene] of photoScenes) {
+            const control = surface.getBoundingClientRect();
+            Object.assign(scene.style, {
+                width: heroBox.width + 'px',
+                height: heroBox.height + 'px',
+                left: heroBox.left - control.left - surface.clientLeft + 'px',
+                top: heroBox.top - control.top - surface.clientTop + 'px',
+                backgroundColor, backgroundImage, backgroundPosition, backgroundSize
+            });
+        }
+    }
+
+    function makeDisplacementMap(width, height, corner) {
+        canvas.width = width;
+        canvas.height = height;
+        const map = context.createImageData(width, height);
+        const depthLimit = Math.min(38, Math.min(width, height) * 0.47);
+
+        for (let y = 0; y < height; y++) {
+            const py = y + 0.5;
+            const dy = py - Math.max(corner, Math.min(py, height - corner));
+
+            for (let x = 0; x < width; x++) {
+                const px = x + 0.5;
+                const dx = px - Math.max(corner, Math.min(px, width - corner));
+                const length = Math.hypot(dx, dy);
+                const depth = Math.max(0, corner - length);
+                // Sample inward along a curved shoulder and return to unity in the center.
+                const bend = 116 * Math.pow(Math.max(0, 1 - depth / depthLimit), 1.55) / (length || 1);
+                const offset = 4 * (y * width + x);
+                map.data[offset] = 128 - bend * dx;
+                map.data[offset + 1] = 128 - bend * dy;
+                map.data[offset + 3] = 255;
+            }
+        }
+
+        context.putImageData(map, 0, 0);
+        return canvas.toDataURL();
+    }
+
     const resize = new ResizeObserver(entries => {
         for (const { target } of entries) {
-            const width = target.offsetWidth;
-            const height = target.offsetHeight;
+            const index = surfaces.indexOf(target);
+            if (index === -1) continue;
+            const width = liveBackdrop ? target.offsetWidth : target.clientWidth;
+            const height = liveBackdrop ? target.offsetHeight : target.clientHeight;
             if (!width || !height) continue;
 
             const radius = parseFloat(getComputedStyle(target).borderTopLeftRadius);
             const corner = Math.min(radius, width / 2, height / 2);
-            canvas.width = width;
-            canvas.height = height;
-            const map = context.createImageData(width, height);
-
-            for (let y = 0; y < height; y++) {
-                const py = y + 0.5;
-                const dy = py - Math.max(corner, Math.min(py, height - corner));
-
-                for (let x = 0; x < width; x++) {
-                    const px = x + 0.5;
-                    const dx = px - Math.max(corner, Math.min(px, width - corner));
-                    const distance = Math.hypot(dx, dy);
-                    const depth = corner - distance;
-                    // Sample inward along the rounded rim and fade to a flat center.
-                    const strength = Math.max(0, 1 - Math.max(0, depth) / 12) * 110;
-                    const offset = 4 * (y * width + x);
-                    map.data[offset] = 128 - strength * dx / (distance || 1);
-                    map.data[offset + 1] = 128 - strength * dy / (distance || 1);
-                    map.data[offset + 3] = 255;
-                }
-            }
-
-            context.putImageData(map, 0, 0);
-            const id = 'refraction-' + surfaces.indexOf(target);
-            const image = document.querySelector('#' + id + ' feImage');
+            const id = 'refraction-' + index;
+            const filter = document.getElementById(id);
+            const image = filter.querySelector('feImage');
             image.setAttribute('width', width);
             image.setAttribute('height', height);
-            image.setAttribute('href', canvas.toDataURL());
+            image.setAttribute('href', makeDisplacementMap(width, height, corner));
+            const scale = Math.min(Math.min(width, height) * 0.69, 76);
+            filter.querySelectorAll('feDisplacementMap').forEach((pass, channel) => {
+                pass.setAttribute('scale', scale * channels[channel].factor);
+            });
             target.style.setProperty('--glass-refraction', 'url("#' + id + '")');
-            target.classList.add('has-refraction');
+            target.classList.add(liveBackdrop ? 'has-refraction' : 'has-photo-refraction');
         }
+
+        if (!liveBackdrop) alignHeroPhoto();
     });
 
-    const transparency = matchMedia('(prefers-reduced-transparency: no-preference)');
+    const reduceTransparency = matchMedia('(prefers-reduced-transparency: reduce)');
     function observeSurfaces() {
-        if (transparency.matches) {
+        if (!reduceTransparency.matches) {
             surfaces.forEach(surface => resize.observe(surface));
+            if (!liveBackdrop) resize.observe(hero);
         } else {
             resize.disconnect();
         }
     }
-    transparency.addEventListener('change', observeSurfaces);
+    reduceTransparency.addEventListener('change', observeSurfaces);
     observeSurfaces();
 })();

@@ -50,39 +50,51 @@ figure { margin: 0; }
 .glass {
     --glass-tint: rgba(19, 25, 49, .34);
     --glass-fallback: #293652;
-    --glass-blur: 12px;
     --glass-glint: linear-gradient(145deg, rgba(223, 243, 255, .25), transparent 40%, rgba(230, 216, 255, .06) 68%, rgba(255, 224, 229, .18));
     position: relative;
     border: 1px solid rgba(238, 247, 255, .52);
     border-radius: var(--glass-radius);
     color: #fff;
-    background: var(--glass-glint), var(--glass-fallback);
+    background: var(--glass-glint), var(--glass-tint);
     box-shadow: inset 1px 1px 2px rgba(255, 255, 255, .55),
         inset -1px -1px 3px rgba(210, 222, 255, .28),
         inset 0 0 12px rgba(232, 243, 255, .12),
         0 7px 24px rgba(14, 20, 42, .22);
 }
 
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .glass {
-        background-color: var(--glass-tint);
-        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(152%);
-        backdrop-filter: blur(var(--glass-blur)) saturate(152%);
-    }
-}
+.glass.has-refraction { backdrop-filter: var(--glass-refraction); }
 
-@media (prefers-reduced-transparency: no-preference) {
-    .glass.has-refraction {
-        backdrop-filter: blur(var(--glass-blur)) saturate(152%) var(--glass-refraction);
-    }
+/* Sample the hero photo inside its own controls when SVG backdrop-filter is unavailable. */
+.glass.has-photo-refraction { isolation: isolate; }
+.lens-photo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+.lens-sample {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    filter: var(--glass-refraction);
+}
+.lens-scene { position: absolute; }
+.lens-photo::after {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--glass-glint), var(--glass-tint);
+    box-shadow: inset 1px 1px 2px rgba(255, 255, 255, .55),
+        inset -1px -1px 3px rgba(210, 222, 255, .28);
+    content: "";
 }
 
 @media (prefers-reduced-transparency: reduce) {
-    .glass {
-        background-color: var(--glass-fallback);
-        -webkit-backdrop-filter: none;
-        backdrop-filter: none;
-    }
+    .glass { background-color: var(--glass-fallback); }
+    .glass.has-refraction { backdrop-filter: none; }
+    .lens-photo { display: none; }
 }
 
 a.glass, button.glass {
@@ -242,7 +254,6 @@ a.glass:active, button.glass:active { translate: 0 1px; }
 .hero-button {
     --glass-tint: rgba(46, 75, 145, .42);
     --glass-fallback: #324c87;
-    --glass-blur: 7px;
 }
 .hero-button .icon { font-size: .82rem; }
 
@@ -257,7 +268,6 @@ a.glass:active, button.glass:active { translate: 0 1px; }
     --glass-tint: rgba(30, 49, 85, .16);
     --glass-fallback: #354d79;
     --glass-radius: 2rem;
-    --glass-blur: 7px;
     display: grid;
     grid-template-columns: 1fr auto;
     align-content: space-between;
@@ -340,8 +350,6 @@ a.glass:active, button.glass:active { translate: 0 1px; }
     color: #fff;
     background: rgba(19, 27, 48, .54);
     font-size: .8rem;
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
 }
 .event-photo-card { border: 1px solid #e1e6f2; }
 .event-photo-card[data-lightbox-src] { cursor: zoom-in; }
