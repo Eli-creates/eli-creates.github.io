@@ -3046,3 +3046,12 @@ input[type="submit"]:focus-visible,
 		transform: none;
 	}
 }
+
+/* Refraction maps are supplied by the mobile navigation script. */
+@media screen and (max-width: 960px) and (not (prefers-reduced-transparency: reduce)) {
+	#header.has-refraction,
+	#headerToggle .toggle.has-refraction {
+		background-color: rgba(24, 39, 53, 0.68);
+		backdrop-filter: blur(3px) saturate(140%) var(--glass-refraction);
+	}
+}
